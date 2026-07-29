@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>هياكل البيانات — لوحة الدرس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E1620;
+    --panel:#141F2C;
+    --panel-2:#182635;
+    --line: rgba(148,178,199,0.14);
+    --line-strong: rgba(148,178,199,0.26);
+    --text:#EAF1F6;
+    --muted:#8FA3B5;
+    --muted-2:#61788C;
+    --teal:#33D6C0;
+    --teal-dim: rgba(51,214,192,0.14);
+    --amber:#F0A83B;
+    --amber-dim: rgba(240,168,59,0.14);
+    --rose:#E8697D;
+    --rose-dim: rgba(232,105,125,0.14);
+    --code-bg:#0B1219;
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 600px at 85% -10%, rgba(51,214,192,0.10), transparent 60%),
+      radial-gradient(900px 500px at 0% 100%, rgba(240,168,59,0.07), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Tajawal', sans-serif;
+    font-size:17px;
+    line-height:1.9;
+    -webkit-font-smoothing:antialiased;
+  }
+  code, .mono{ font-family:'JetBrains Mono', monospace; direction:ltr; }
+
+  /* ===== Layout ===== */
+  .app{ display:flex; min-height:100vh; }
+
+  .sidebar{
+    width:300px;
+    flex:0 0 300px;
+    background:linear-gradient(180deg, var(--panel), var(--panel-2));
+    border-left:1px solid var(--line);
+    padding:28px 20px;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+  }
+  .brand{
+    display:flex; align-items:center; gap:12px;
+    padding:0 8px 22px 8px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:20px;
+  }
+  .brand-mark{
+    width:44px; height:44px; border-radius:12px;
+    background:linear-gradient(135deg, var(--teal), #1a8f80);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:20px; color:#04211d;
+    flex:none;
+  }
+  .brand-text{ font-size:15px; font-weight:800; color:var(--text); }
+  .brand-sub{ font-size:12px; color:var(--muted-2); margin-top:2px; }
+
+  .nav-group-label{
+    font-size:11px; letter-spacing:.08em; color:var(--muted-2);
+    font-weight:700; margin:18px 10px 8px 10px; text-transform:uppercase;
+  }
+  .navlist{ list-style:none; margin:0; padding:0; }
+  .navitem{
+    display:flex; align-items:center; gap:12px;
+    padding:11px 12px; border-radius:10px; cursor:pointer;
+    color:var(--muted); font-weight:500; font-size:15px;
+    transition:background .15s ease, color .15s ease;
+    margin-bottom:3px;
+  }
+  .navitem:hover{ background:rgba(255,255,255,0.04); color:var(--text); }
+  .navitem.active{
+    background:var(--teal-dim);
+    color:var(--teal);
+    font-weight:700;
+  }
+  .navitem .num{
+    width:26px; height:26px; border-radius:8px;
+    background:rgba(255,255,255,0.06);
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-family:'JetBrains Mono',monospace; flex:none;
+    color:var(--muted-2);
+  }
+  .navitem.active .num{ background:var(--teal); color:#04211d; }
+
+  .main{
+    flex:1;
+    min-width:0;
+    padding:40px 56px 100px 56px;
+    max-width:1000px;
+  }
+
+  section.panel{ display:none; animation:fadeIn .35s ease; }
+  section.panel.active{ display:block; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:700; color:var(--teal);
+    background:var(--teal-dim); padding:6px 14px; border-radius:100px;
+    margin-bottom:18px;
+  }
+  h1.title{
+    font-size:38px; font-weight:900; margin:0 0 10px 0; letter-spacing:-0.01em;
+  }
+  .subtitle{ color:var(--muted); font-size:18px; margin-bottom:36px; max-width:640px;}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:26px 28px;
+    margin-bottom:22px;
+  }
+  .card h2{
+    font-size:23px; font-weight:800; margin:0 0 14px 0;
+    display:flex; align-items:center; gap:10px;
+  }
+  .card h2 .dot{ width:9px; height:9px; border-radius:50%; background:var(--teal); flex:none; }
+  .card p{ margin:0 0 14px 0; color:var(--text); font-size:17px; }
+  .card p:last-child{ margin-bottom:0; }
+  .card ul{ margin:0; padding-right:22px; }
+  .card li{ margin-bottom:10px; font-size:17px; }
+  .card li:last-child{ margin-bottom:0; }
+  .muted{ color:var(--muted); }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:760px){ .grid2{ grid-template-columns:1fr; } }
+
+  /* code blocks */
+  .code{
+    background:var(--code-bg);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:18px 20px;
+    overflow-x:auto;
+    margin:14px 0;
+    direction:ltr;
+    text-align:left;
+    font-size:15.5px;
+    line-height:1.7;
+  }
+  .code .cm{ color:#5C7A8A; }
+  .code .kw{ color:#F0A83B; }
+  .code .ty{ color:#33D6C0; }
+  .code .fn{ color:#8FC6FF; }
+  .code .num{ color:#E8697D; }
+  .code .str{ color:#9CD67A; }
+
+  /* complexity badges */
+  .badge{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'JetBrains Mono', monospace; font-weight:600; font-size:14px;
+    padding:4px 12px; border-radius:8px; direction:ltr;
+  }
+  .b-o1{ background:rgba(51,214,192,0.16); color:var(--teal); }
+  .b-on{ background:rgba(240,168,59,0.16); color:var(--amber); }
+  .b-on2{ background:rgba(232,105,125,0.16); color:var(--rose); }
+  .b-bad{ background:rgba(232,105,125,0.22); color:#F19DAB; }
+
+  table{ width:100%; border-collapse:collapse; margin-top:6px; font-size:16px; }
+  th, td{ padding:12px 14px; text-align:right; border-bottom:1px solid var(--line); }
+  th{ color:var(--muted); font-weight:700; font-size:14px; }
+  td.mono, th.mono{ direction:ltr; text-align:left; font-family:'JetBrains Mono',monospace; }
+  tr:last-child td{ border-bottom:none; }
+
+  .oplist{ display:flex; flex-direction:column; gap:10px; }
+  .oprow{
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    background:rgba(255,255,255,0.025); border:1px solid var(--line);
+    padding:12px 16px; border-radius:10px;
+  }
+  .oprow .label{ font-weight:600; }
+
+  .quote{
+    border-right:3px solid var(--amber); padding:4px 18px;
+    background:var(--amber-dim); border-radius:8px; margin:16px 0;
+    color:var(--text); font-size:16.5px;
+  }
+
+  .lifo-stack{
+    display:flex; flex-direction:column-reverse; gap:6px; width:140px;
+  }
+  .lifo-stack div{
+    background:var(--teal-dim); border:1px solid var(--line-strong);
+    color:var(--teal); text-align:center; padding:10px; border-radius:8px;
+    font-family:'JetBrains Mono',monospace; font-weight:700;
+  }
+
+  .fifo-row{ display:flex; gap:8px; align-items:center; }
+  .fifo-row div{
+    background:var(--amber-dim); border:1px solid var(--line-strong);
+    color:var(--amber); text-align:center; padding:12px 16px; border-radius:8px;
+    font-family:'JetBrains Mono',monospace; font-weight:700; min-width:34px;
+  }
+
+  .pill-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .pill{
+    font-size:13px; font-weight:700; padding:5px 12px; border-radius:100px;
+    background:rgba(255,255,255,0.05); color:var(--muted); border:1px solid var(--line);
+  }
+
+  ::-webkit-scrollbar{ width:9px; height:9px; }
+  ::-webkit-scrollbar-thumb{ background:rgba(255,255,255,0.12); border-radius:10px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+
+  @media (max-width:900px){
+    .app{ flex-direction:column; }
+    .sidebar{ width:100%; height:auto; position:relative; flex:none; border-left:none; border-bottom:1px solid var(--line); }
+    .main{ padding:28px 20px 80px 20px; max-width:100%; }
+    h1.title{ font-size:30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">DS</div>
+      <div>
+        <div class="brand-text">هياكل البيانات</div>
+        <div class="brand-sub">دورة Java — مختصرات الدرس</div>
+      </div>
+    </div>
+
+    <div class="nav-group-label">الأساسيات</div>
+    <ul class="navlist">
+      <li class="navitem active" data-target="s1"><span class="num">1</span> مقدمة عامة</li>
+      <li class="navitem" data-target="s2"><span class="num">2</span> الكفاءة (Efficiency)</li>
+      <li class="navitem" data-target="s3"><span class="num">3</span> دالة النمو والتدوينات المقاربة</li>
+    </ul>
+
+    <div class="nav-group-label">هياكل خطية</div>
+    <ul class="navlist">
+      <li class="navitem" data-target="s4"><span class="num">4</span> المصفوفة Array</li>
+      <li class="navitem" data-target="s5"><span class="num">5</span> المصفوفة الديناميكية ArrayList</li>
+      <li class="navitem" data-target="s6"><span class="num">6</span> الرصة Stack</li>
+      <li class="navitem" data-target="s7"><span class="num">7</span> الطابور Queue &amp; Deque</li>
+    </ul>
+
+    <div class="nav-group-label">مفاهيم مساندة</div>
+    <ul class="navlist">
+      <li class="navitem" data-target="s8"><span class="num">8</span> Class &amp; Interface</li>
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- 1 -->
+    <section class="panel active" id="s1">
+      <div class="eyebrow">01 · البداية</div>
+      <h1 class="title">ما هي هياكل البيانات؟</h1>
+      <p class="subtitle">أشكال يتم بها تمثيل البيانات التي تحتاج إلى تخزينها واسترجاعها بأسهل وأسرع خطوات ممكنة.</p>
+
+      <div class="card">
+        <h2><span class="dot"></span> لماذا نحتاج هياكل بيانات متعددة؟</h2>
+        <ul>
+          <li>يوجد العديد من هياكل البيانات، ويتم الاختيار بينها حسب المشكلة وطريقة التخزين والاسترجاع المناسبة.</li>
+          <li>تُستخدم هياكل البيانات في تطبيقات الموبايل والكمبيوتر والألعاب (Games)، حيث يستخدم كل منها هيكل أو أكثر بطرق تناسبه.</li>
+          <li>من أشهر الهياكل المتعارف عليها: <span class="mono">Array</span> ، <span class="mono">Stack</span> ، <span class="mono">Tree</span>.</li>
+        </ul>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <h2 style="font-size:19px"><span class="dot"></span> أمثلة استخدام</h2>
+          <p class="muted">تطبيقات الموبايل، تطبيقات الكمبيوتر، الألعاب — كل منها يستخدم هيكل أو أكثر بطريقة تناسبه.</p>
+        </div>
+        <div class="card">
+          <h2 style="font-size:19px"><span class="dot"></span> الأشكال الشائعة</h2>
+          <div class="pill-row">
+            <span class="pill">Tree</span>
+            <span class="pill">Stack</span>
+            <span class="pill">Array</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="panel" id="s2">
+      <div class="eyebrow">02 · المقياس</div>
+      <h1 class="title">الكفاءة (Efficiency)</h1>
+      <p class="subtitle">ترتبط الكفاءة بحسن استغلال الموارد المتاحة، من أهمها الوقت والمجهود والأموال. كلما استطعنا أن نوفر من هذه الموارد، كلما أصبحنا أكثر كفاءة.</p>
+
+      <div class="card">
+        <h2><span class="dot"></span> لماذا نقارن هياكل البيانات؟</h2>
+        <p>لكي نختار هيكل البيانات المناسب لكل مشكلة، علينا مقارنة هياكل البيانات المختلفة لكي نصل إلى الهيكل الذي سيساعدنا في حل المشكلة بشكل أسرع.</p>
+        <p>طالما يوجد هيكل بيانات أفضل من هيكل آخر، فبالتأكيد يوجد معيار يجعلنا نستطيع معرفة كفاءة كل هيكل.</p>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> موارد الكمبيوتر</h2>
+        <p>أهم مورَدين لدى الكمبيوتر هما <b>الوقت</b> و<b>المساحة</b> (السعة التخزينية).</p>
+        <div class="quote">
+          عند تشغيل برنامج معين أكثر من مرة، سنجد قراءات مختلفة للوقت والمساحة — وذلك لأن نظام التشغيل يكون مشغّلًا أكثر من عملية في نفس الوقت، فيقوم بعمل <b>تبديل السياق (Context Switching)</b>: ميزة لنظام التشغيل متعدد المهام تسمح بمشاركة وحدة المعالجة المركزية الواحدة عبر عمليات متعددة.
+        </div>
+        <p><b>Garbage Collection</b>: يعمل على تحرير مساحة الذاكرة المخصصة للكائنات التي لم يعد البرنامج بحاجة إليها.</p>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="panel" id="s3">
+      <div class="eyebrow">03 · القياس الرياضي</div>
+      <h1 class="title">دالة النمو والتدوينات المقاربة</h1>
+      <p class="subtitle">دالة النمو (Growth Function) تحاول إيجاد علاقة بين عدد العمليات التي تحتاج أن تُنفَّذ وبين قيمة المدخلات أو عددها.</p>
+
+      <div class="card">
+        <h2><span class="dot"></span> مثال: حلقة واحدة</h2>
+<div class="code"><span class="kw">public</span> <span class="kw">static</span> <span class="kw">void</span> <span class="fn">printHello</span>(<span class="ty">int</span> n) {
+    <span class="kw">for</span>(<span class="ty">int</span> i = <span class="num">0</span>; i &lt; n; i++) {
+        System.out.format(<span class="str">"Hello! \n"</span>);
+    }
+}</div>
+        <p>الحلقة تُنفَّذ عدد <span class="mono">n</span> من المرات، فكلما زاد <span class="mono">n</span> زاد عدد العمليات وقلّت الكفاءة. نعبّر عنها بمعادلة خطية: <span class="mono badge b-on">Y = n</span></p>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> مثال: حلقة متداخلة</h2>
+<div class="code"><span class="kw">for</span>(<span class="ty">int</span> i = <span class="num">0</span>; i &lt; n; i++) {
+    <span class="kw">for</span>(<span class="ty">int</span> j = <span class="num">0</span>; j &lt; n; j++) {
+        System.out.format(<span class="str">"Hello! i=%d,j=%d\n"</span>, i, j);
+    }
+}</div>
+        <p>السطر الداخلي يُنفَّذ <span class="mono">n*n</span> أي <span class="mono">n²</span> مرة — أقل كفاءة من المثال السابق: <span class="mono badge b-on2">Y = n²</span></p>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> جدول مقارنة نمو القيم</h2>
+        <table>
+          <tr><th>n</th><th class="mono">n</th><th class="mono">n²</th><th class="mono">n³</th></tr>
+          <tr><td>1</td><td class="mono">1</td><td class="mono">1</td><td class="mono">1</td></tr>
+          <tr><td>10</td><td class="mono">10</td><td class="mono">100</td><td class="mono">1,000</td></tr>
+          <tr><td>100</td><td class="mono">100</td><td class="mono">10,000</td><td class="mono">1,000,000</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> تبسيط المعادلات — التدوينات المقاربة (Asymptotic Notation)</h2>
+        <p>تُستخدم لوصف وقت تشغيل الخوارزمية، أي مقدار الوقت الذي تستغرقه مع إدخال معين. عند تعويض قيمة كبيرة لـ <span class="mono">n</span>، الحدّ الأكبر هو ما يهيمن على الناتج، وباقي المعادلة يُهمَل.</p>
+        <div class="code">Y = 2n² + n + 4  <span class="cm">// المعادلة الأصلية</span>
+Y = 3n²          <span class="cm">// إهمال الحدود الأصغر</span>
+Y = n²           <span class="cm">// حذف المعامل الثابت 3</span>
+<span class="cm">// → معادلة النمو النهائية: O(n²)</span></div>
+        <div class="pill-row">
+          <span class="badge b-o1">Big O → Worst case</span>
+          <span class="badge b-on">Omega → Best case</span>
+          <span class="badge b-on2">Theta → Average case</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> ترتيب درجات النمو (من الأفضل إلى الأقل كفاءة)</h2>
+        <table>
+          <tr><th>#</th><th>النوع</th><th class="mono">الرمز</th></tr>
+          <tr><td>1</td><td>عمليات ثابتة (Fixed operation)</td><td class="mono">O(1)</td></tr>
+          <tr><td>2</td><td>لوغاريتمي (log)</td><td class="mono">O(log n)</td></tr>
+          <tr><td>3</td><td>دالة خطية (Linear)</td><td class="mono">O(n)</td></tr>
+          <tr><td>4</td><td>خطي-لوغاريتمي</td><td class="mono">O(n log n)</td></tr>
+          <tr><td>5</td><td>متعددة الحدود (Polynomial)</td><td class="mono">O(n², n³, nᵖ)</td></tr>
+          <tr><td>6</td><td>المضروب (Factorial)</td><td class="mono">O(n!)</td></tr>
+          <tr><td>7</td><td>أُسّي</td><td class="mono">O(nⁿ)</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="panel" id="s4">
+      <div class="eyebrow">04 · هيكل ثابت الحجم</div>
+      <h1 class="title">المصفوفة — Array</h1>
+      <p class="subtitle">هيكل بيانات يقوم بتخزين مجموعة عناصر بشكل معيّن وترتيب معيّن. يجب أن تكون جميع العناصر من نفس النوع، ونحدّد مساحتها التخزينية مسبقًا.</p>
+
+      <div class="card">
+        <h2><span class="dot"></span> طرق التعريف والتهيئة</h2>
+<div class="code"><span class="ty">int</span>[] numbers;
+<span class="ty">int</span> []numbers;
+<span class="ty">int</span> numbers[];
+
+<span class="cm">// تهيئة بمساحة محددة</span>
+<span class="ty">int</span>[] numbers = <span class="kw">new</span> <span class="ty">int</span>[<span class="num">10</span>];
+
+<span class="cm">// تهيئة بقيم مباشرة</span>
+<span class="ty">int</span>[] numbers = {<span class="num">5</span>,<span class="num">4</span>,<span class="num">10</span>,<span class="num">9</span>,<span class="num">2</span>};</div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> تصنيف العمليات على Array</h2>
+        <div class="oplist">
+          <div class="oprow"><span class="label">استرجاع / تغيير قيمة عنصر</span><span class="badge b-o1">O(1)</span></div>
+          <div class="oprow"><span class="label">النسخ (Copy)</span><span class="badge b-on">O(n)</span></div>
+          <div class="oprow"><span class="label">البحث عن عنصر (Linear Search)</span><span class="badge b-on">O(n)</span></div>
+          <div class="oprow"><span class="label">إضافة/حذف في البداية أو المنتصف</span><span class="badge b-bad">أسوأ العمليات</span></div>
+        </div>
+        <p class="muted" style="margin-top:14px">إذا واجهت عملية من الصنف الأخير كثيرًا، فكّر في هيكل بيانات آخر بدلًا من Array.</p>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <h2 style="font-size:19px"><span class="dot"></span> النسخة السطحية Shallow Copy</h2>
+          <p>عملية النسخ في Array تنسخ العناوين (Addresses) فقط عند وجود Objects، وليس الكائنات نفسها.</p>
+        </div>
+        <div class="card">
+          <h2 style="font-size:19px"><span class="dot"></span> النسخة العميقة Deep Copy</h2>
+          <p>تنسخ الكائنات فعليًا، وتكون غالبًا عملية يدوية يقوم بها المبرمج.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> المصفوفات متعددة الأبعاد</h2>
+<div class="code"><span class="cm">// ثنائية الأبعاد — مساحة ثابتة للأعمدة</span>
+<span class="ty">int</span>[][] arr = <span class="kw">new</span> <span class="ty">int</span>[<span class="num">10</span>][<span class="num">5</span>];
+
+<span class="cm">// ثنائية الأبعاد — بقيم مبدئية</span>
+<span class="ty">int</span>[][] arr = {{<span class="num">1</span>,<span class="num">2</span>,<span class="num">5</span>,<span class="num">0</span>},{<span class="num">4</span>},{<span class="num">8</span>,<span class="num">3</span>}};
+
+<span class="cm">// ثلاثية الأبعاد</span>
+<span class="ty">int</span>[][][] numbers = <span class="kw">new</span> <span class="ty">int</span>[<span class="num">4</span>][ ][ ];
+
+<span class="cm">// استرجاع كل العناصر: Nested for loop</span>
+<span class="kw">for</span> (<span class="ty">int</span> i = <span class="num">0</span>; i &lt; arr.length; i++) {
+    <span class="kw">for</span>(<span class="ty">int</span> j = <span class="num">0</span>; j &lt; arr[i].length; j++) {
+        System.out.println(arr[i][j]);
+    }
+}</div>
+        <p class="muted">يجب تحديد عدد الصفوف عند التعريف؛ أما عدد الأعمدة فاختياري تحديده مسبقًا.</p>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="panel" id="s5">
+      <div class="eyebrow">05 · هيكل مرن</div>
+      <h1 class="title">المصفوفة الديناميكية — ArrayList</h1>
+      <p class="subtitle">ArrayList = خصائص Array + مرونة List. يأخذ من Array طريقة التخزين، ويأخذ من List أنك لست مقيّدًا بتحديد عدد العناصر مسبقًا.</p>
+
+      <div class="card">
+        <h2><span class="dot"></span> التعريف — ولاحظ: العناصر يجب أن تكون Objects</h2>
+<div class="code"><span class="kw">import</span> java.util.ArrayList;
+
+ArrayList&lt;Integer&gt; myList = <span class="kw">new</span> ArrayList&lt;&gt;();
+ArrayList&lt;Integer&gt; myList = <span class="kw">new</span> ArrayList&lt;&gt;(<span class="num">10</span>);
+ArrayList&lt;Integer&gt; myList = <span class="kw">new</span> ArrayList&lt;&gt;(
+    Arrays.asList(<span class="kw">new</span> Integer(<span class="num">2</span>), <span class="kw">new</span> Integer(<span class="num">5</span>), <span class="kw">new</span> Integer(<span class="num">8</span>)));</div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> Array مقابل ArrayList — نفس العملية، دالة مختلفة</h2>
+        <table>
+          <tr><th>العملية</th><th class="mono">Array</th><th class="mono">ArrayList</th></tr>
+          <tr><td>استرجاع عنصر</td><td class="mono">arr[2]</td><td class="mono">arrList.get(2)</td></tr>
+          <tr><td>تغيير قيمة</td><td class="mono">arr[2] = 100</td><td class="mono">arrList.set(2, 100)</td></tr>
+          <tr><td>عدد العناصر</td><td class="mono">arr.length</td><td class="mono">arrList.size()</td></tr>
+          <tr><td>إضافة</td><td class="mono">—</td><td class="mono">arrList.add(x)</td></tr>
+          <tr><td>حذف</td><td class="mono">—</td><td class="mono">arrList.remove(x)</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> عملية الإضافة والحذف بالتفصيل</h2>
+<div class="code">arrList.add(<span class="kw">new</span> Integer(<span class="num">10</span>));     <span class="cm">// إضافة في النهاية</span>
+arrList.add(<span class="num">2</span>, <span class="kw">new</span> Integer(<span class="num">10</span>));  <span class="cm">// إضافة عند index محدد</span>
+
+arrList.remove(<span class="num">2</span>);           <span class="cm">// حذف عنصر index رقم 2</span>
+arrList.remove(object);      <span class="cm">// حذف أول تكرار لهذا العنصر فقط</span></div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> كيف تنمو مساحة ArrayList داخليًا؟</h2>
+        <p>عند تعريف ArrayList فارغ، يُحجز بداخله Array بحجم افتراضي (Default Size) يبلغ تقريبًا 10. عندما لا تكفي المساحة لعنصر جديد، يُحجز Array جديد <b>مساحته = 1.5 × المساحة القديمة</b>، ثم تُنقل جميع العناصر القديمة إليه بنفس الترتيب.</p>
+        <p class="muted">ArrayList يُخزّن Array بداخله، لكنه لا يُظهر لك مساحة هذا الـ Array ولا كيف تزداد.</p>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> تعقيد وقت العمليات</h2>
+        <div class="oplist">
+          <div class="oprow"><span class="label">استرجاع / تغيير قيمة عنصر</span><span class="badge b-o1">O(1)</span></div>
+          <div class="oprow"><span class="label">نسخ العناصر (clone)</span><span class="badge b-on">O(n)</span></div>
+          <div class="oprow"><span class="label">إضافة/حذف في المنتصف</span><span class="badge b-on">O(n)</span></div>
+          <div class="oprow"><span class="label">إضافة في الآخر — مساحة متوفرة</span><span class="badge b-o1">O(1)</span></div>
+          <div class="oprow"><span class="label">إضافة في الآخر — بدون مساحة متوفرة (Amortized)</span><span class="badge b-o1">O(1)</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="panel" id="s6">
+      <div class="eyebrow">06 · LIFO</div>
+      <h1 class="title">الرصة — Stack</h1>
+      <p class="subtitle">السلوك المميّز للـ Stack هو <b>Last In First Out (LIFO)</b>: آخر شيء يدخل هو أول شيء يخرج. للوصول إلى عنصر، يجب أن نكون قد مررنا بالعناصر السابقة له (Sequential access) — بعكس Array الذي يسمح بالوصول العشوائي (Random access).</p>
+
+      <div class="grid2">
+        <div class="card">
+          <h2 style="font-size:19px"><span class="dot"></span> السلوك (LIFO)</h2>
+          <div class="lifo-stack">
+            <div>2</div><div>5</div><div>8</div><div>20 ←</div>
+          </div>
+          <p class="muted" style="margin-top:14px">آخر عنصر أُضيف هو أول عنصر يُسترجع.</p>
+        </div>
+        <div class="card">
+          <h2 style="font-size:19px"><span class="dot"></span> التعريف</h2>
+<div class="code">Stack&lt;Integer&gt; myStack = <span class="kw">new</span> Stack&lt;&gt;();</div>
+          <p class="muted">لا يتم تحديد عدد العناصر مسبقًا، ونوع العناصر يجب أن يكون Object.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> العمليات الأساسية</h2>
+        <div class="oplist">
+          <div class="oprow"><span class="label"><span class="mono">push()</span> — إضافة عنصر لأعلى الرصة</span><span class="badge b-o1">O(1)</span></div>
+          <div class="oprow"><span class="label"><span class="mono">pop()</span> — استرجاع وحذف آخر عنصر</span><span class="badge b-o1">O(1)</span></div>
+          <div class="oprow"><span class="label"><span class="mono">peek()</span> — معرفة قيمة آخر عنصر دون حذفه</span><span class="badge b-o1">O(1)</span></div>
+          <div class="oprow"><span class="label"><span class="mono">size()</span> — عدد العناصر</span><span class="badge b-o1">O(1)</span></div>
+          <div class="oprow"><span class="label"><span class="mono">isEmpty()</span> — هل الرصة فارغة؟</span><span class="badge b-o1">O(1)</span></div>
+          <div class="oprow"><span class="label"><span class="mono">search()</span> — تحديد مكان عنصر</span><span class="badge b-on">—</span></div>
+        </div>
+        <p class="quote" style="margin-top:16px">عند استخدام <span class="mono">pop()</span> يجب استخدام الناتج بسرعة، وإلا فلن تجده إن خرجت من الـ Scope.</p>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> أمثلة تقنية على استخدام Stack</h2>
+        <ul>
+          <li><b>Call Stack:</b> موقع في الذاكرة يُخزَّن فيه استدعاء الدوال. لكل دالة "إطار" (Frame) يحتوي أسماء المتغيرات وقيمها وموقعها، ليعرف المعالج أين يعود بعد الانتهاء من تنفيذ الدالة المستدعاة.</li>
+          <li><b>لغات الترميز (HTML/XML):</b> يجب قفل أي وسم بنفس ترتيب فتحه العكسي — تمامًا كسلوك الرصة.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> التخزين والوراثة</h2>
+        <p>الرصة (Stack) ترث (Inherit) من Class يُسمى <span class="mono">Vector</span>، وتُخزَّن عناصرها كمصفوفة (Array) — بنفس طريقة تخزين ArrayList.</p>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="panel" id="s7">
+      <div class="eyebrow">07 · FIFO</div>
+      <h1 class="title">الطابور — Queue &amp; Deque</h1>
+      <p class="subtitle">بنية بيانات خطية مفتوحة من كلا الطرفين، تُنفَّذ عملياتها بترتيب <b>First In First Out (FIFO)</b>: الذي يدخل أولًا يخرج أولًا — كأي طابور نراه في حياتنا.</p>
+
+      <div class="card">
+        <h2 style="font-size:19px"><span class="dot"></span> السلوك (FIFO)</h2>
+        <div class="fifo-row">
+          <span class="muted mono" style="min-width:auto">Enqueue →</span>
+          <div>5</div><div>9</div><div>3</div><div>8</div><div>2</div>
+          <span class="muted mono" style="min-width:auto">→ Dequeue</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> Queue مقابل Stack</h2>
+        <p>الطابور عكس الرصة تمامًا: سلوك Queue هو FIFO، بينما سلوك Stack هو LIFO. عند إضافة عنصر في Queue، يُضاف دائمًا في النهاية — وليس في البداية أو المنتصف.</p>
+        <p class="muted">Java ليس بها Class اسمه Queue، بل واجهة (Interface) تسمى <span class="mono">Queue</span> — لا يمكن إنشاء كائن منها مباشرة، فقط من فئة تنفّذها.</p>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> دوال الواجهة Queue (نسختان لكل عملية)</h2>
+        <table>
+          <tr><th>الوظيفة</th><th class="mono">يرمي Exception</th><th class="mono">يرجع null</th></tr>
+          <tr><td>دخول الطابور (Enqueue)</td><td class="mono">add()</td><td class="mono">offer()</td></tr>
+          <tr><td>خروج من الطابور (Dequeue)</td><td class="mono">remove()</td><td class="mono">poll()</td></tr>
+          <tr><td>معرفة أول الطابور</td><td class="mono">element()</td><td class="mono">peek()</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> Deque — الطابور ثنائي الاتجاه</h2>
+        <p><span class="mono">Deque</span> اختصار <b>Double-Ended Queue</b>: واجهة تُوسّع Queue، وتسمح بالإدخال والإخراج من <b>أي اتجاه</b>. يمكنها محاكاة سلوك Queue، أو عكسه، أو حتى محاكاة سلوك Stack.</p>
+        <table>
+          <tr><th></th><th>أول عنصر</th><th>أول عنصر (بديل)</th><th>آخر عنصر</th><th>آخر عنصر (بديل)</th></tr>
+          <tr><td>إدخال</td><td class="mono">addFirst()</td><td class="mono">offerFirst()</td><td class="mono">addLast()</td><td class="mono">offerLast()</td></tr>
+          <tr><td>حذف</td><td class="mono">removeFirst()</td><td class="mono">pollFirst()</td><td class="mono">removeLast()</td><td class="mono">pollLast()</td></tr>
+          <tr><td>فحص</td><td class="mono">getFirst()</td><td class="mono">peekFirst()</td><td class="mono">getLast()</td><td class="mono">peekLast()</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> ArrayDeque — التنفيذ الفعلي والتعقيد</h2>
+        <p>لا ينفّذ <span class="mono">ArrayDeque</span> واجهة Queue مباشرة، بل ينفّذ Deque، وهي بدورها تنفّذ Queue. يُخزَّن كمصفوفة (Array)، وعند الامتلاء تُنشأ مصفوفة جديدة بمساحة أكبر — تمامًا كآلية ArrayList.</p>
+        <p>لحلّ مشكلة حذف أول عنصر (والتي تكلّف O(n) في مصفوفة عادية بسبب إزاحة العناصر)، يستخدم ArrayDeque فكرة <b>Circular Array</b>: سهمان أحدهما يشير لبداية الدخول والآخر لبداية الخروج، فلا حاجة لإزاحة العناصر.</p>
+        <div class="oplist">
+          <div class="oprow"><span class="label">إدخال عنصر (Enqueue)</span><span class="badge b-o1">O(1)</span></div>
+          <div class="oprow"><span class="label">إخراج عنصر (Dequeue) — عبر Circular Array</span><span class="badge b-o1">O(1) Amortized</span></div>
+          <div class="oprow"><span class="label">النظر لأول عنصر</span><span class="badge b-o1">O(1)</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> متى نستخدم Queue؟</h2>
+        <p>عندما تحتاج تخزين بيانات كثيرة بالترتيب، لتسترجعها لاحقًا بنفس هذا الترتيب.</p>
+        <ul>
+          <li>طلب أكل من مطعم: الطلبات تُجهَّز بنفس ترتيب دخولها إلى الطابور.</li>
+          <li>تشغيل نظام التشغيل لأكثر من برنامج: يضع كل برنامج في طابور، ثم يشغّل الأول فالذي يليه بسرعة كبيرة حتى لا تشعر بالتبديل.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="panel" id="s8">
+      <div class="eyebrow">08 · خلفية برمجية</div>
+      <h1 class="title">Class و Interface</h1>
+      <p class="subtitle">مفهومان أساسيان يفسّران كيف تُبنى هياكل البيانات في Java من الداخل.</p>
+
+      <div class="card">
+        <h2><span class="dot"></span> ما هي الفئة (Class)؟</h2>
+        <p>تمثّل مجموعة الخصائص أو الطرق المشتركة بين جميع الكائنات من نوع واحد.</p>
+        <div class="quote">مثال: مصنع سيارات — جميع السيارات تشترك في وجود محرك ودواسات ومقاعد، لكن الطراز واللون قد يختلفان من سيارة لأخرى.</div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> ما هي الواجهة (Interface)؟</h2>
+        <p>عقد يحتوي على شروط وبنود على هيئة دوال (Functions)، ويجب على أي فئة تنفّذه (Implement) أن توفّر هذه الدوال بنفس الاسم والمدخلات والمخرجات.</p>
+        <div class="quote">مثال: مفتاح واحد قد يفتح باب المنزل أو السيارة أو الخزنة — لأن لها جميعًا نفس "واجهة" فتحة القفل، رغم أنها كائنات مختلفة تمامًا لا علاقة بينها.</div>
+      </div>
+
+      <div class="card">
+        <h2><span class="dot"></span> Iterable &amp; Iterator</h2>
+        <p>لكي تتمكن فئة ما من العمل مع <span class="mono">for each</span> loop، يجب أن تنفّذ واجهتي <span class="mono">Iterable</span> و <span class="mono">Iterator</span>.</p>
+<div class="code"><span class="kw">for</span>(Integer item : myList) {
+    System.out.println(item);
+}
+
+myList.forEach(item -&gt; System.out.println(item));</div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  const items = document.querySelectorAll('.navitem');
+  const panels = document.querySelectorAll('section.panel');
+  items.forEach(item=>{
+    item.addEventListener('click', ()=>{
+      items.forEach(i=>i.classList.remove('active'));
+      panels.forEach(p=>p.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(item.dataset.target).classList.add('active');
+      document.querySelector('.main').scrollTo({top:0, behavior:'smooth'});
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+</script>
+
+</body>
+</html>
